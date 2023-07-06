@@ -25,6 +25,15 @@
 		numbers = [...numbers, number.length + 1];
 	}
 	$: sum = numbers.reduce((total, currentNumber) => total + currentNumber, 0)
+
+	import PackageInfo from './PackageInfo.svelte';
+	const pkg = {
+		name: 'svelte',
+		speed: 'blazing',
+		version: 4,
+		website: 'https://svelte.dev'
+	};
+
 </script>
 
 <h1>Hello {name.toUpperCase()}</h1>
@@ -59,3 +68,25 @@
 <button on:click = {addNumber}>
 	Click to add incremental numbers
 </button>
+
+<!--PROPS-->
+
+<!--Declaring Props-->
+<Nested answer = {43-1}/>
+
+<!--Default Values-->
+<Nested />
+
+<!--Spread Props-->
+<PackageInfo
+	name = {pkg.name}
+	speed= {pkg.speed}
+	version = {pkg.version}
+	website = {pkg.website}
+/>
+
+<!--LOGIC-->
+
+<!--if Logic-->
+
+
