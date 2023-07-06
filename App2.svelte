@@ -9,6 +9,7 @@
     let selected = colors[0];
 
     import Thing from './Thing.svelte';
+  import PackageInfo from './src/PackageInfo.svelte';
 
     let things = [
         {id : 1, name: 'apple'},
@@ -21,6 +22,38 @@
     function handleClick() {
         things = things.slice(1);
     }
+
+    import { getRandomNumber } from './utils.js';
+
+    let promise = getRandomNumber();
+
+    function handleClick2(){
+        promise = getRandomNumber();
+    }
+
+    let m = { x: 0, y: 0};
+
+    function handleMove(event) {
+        m.x = event.clientX;
+        m.y = event.clientY;
+    }
+
+    import Inner from './Inner.svelte'
+
+    function handleMessage(event) {
+        alert(event.detail.text);
+    }
+
+    import BigRedButton from './BigRedButton.svelte';
+    import horn from './horn.mp3';
+
+    const audio = new Audio();
+    audio.src = horn;
+
+    function handleBRBClick() {
+        audio.play();
+    }
+    
 </script>
 
 <!--LOGIC-->
@@ -95,3 +128,61 @@ indicates a block continuation tag-->
 {/each}
 <!-- We can use any object as the key, as Svelte uses a `Map` internally, in toher words we could do (thing) instead of (thing.id).
 Using a string  or number is generally safer, however, since it means identity persists without referential equality, for example when updating with fresh data from an API server-->
+
+<!--Await blocks-->
+<button on:click={handleClick}>
+    generate random number
+</button>
+{#await promise}
+    <p>... waiting</p>
+{:then number}
+    <p>The number is {number}</p>
+{:catch error}
+    <p style = "color: red">{error.message}</p>
+{/await}
+<!--Only the most recent `promise` is considered, meaning you don't need to worry about race conditions.
+On another note, if you know that your promise can't reject, you can omit the `catch` block. You can also omit the first block if 
+you don't want to show anything until the promise resolves
+{#await promise then number}<p>The number is {number}</p> {/await}-->
+
+<!--EVENTS-->
+
+<!--DOM Events-->
+<div on:pointermove={handleMove}>
+    The pointer is at {m.x} x {m.y}
+</div>
+
+<style>
+    div {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100;
+        padding: 1rem;
+    }
+</style>
+
+<!--Inline Handlers-->
+<div
+    on:pointermove={(e) => {
+        m = {x: e.clientX, y: e.clientY};
+    }}
+> The mouse position using inline handlers is {m.x} x {m.y}
+</div>
+<!-- In some frameworks you may see recommendations to avoid inline event handlers for performance reasons, particularly inside loops.
+That advice doesn't apply to Svelte - the compiler will always do the right thing, whichever form you choose.-->
+
+<!--Event Modifiers-->
+<button on:click|capture|stopPropagation={() => alert('clicked')}>
+    Click me
+</button>
+
+<!--Component Events-->
+<Inner on:message={handleMessage} />
+
+<!--DOM Event Forwarding-->
+<BigRedButton on:click={handleBRBClick} />
+
+
+
