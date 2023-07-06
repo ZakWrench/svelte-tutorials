@@ -84,9 +84,3 @@
 	version = {pkg.version}
 	website = {pkg.website}
 />
-
-<!--LOGIC-->
-
-<!--if Logic-->
-
-
